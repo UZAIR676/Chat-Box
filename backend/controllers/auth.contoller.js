@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user,model.js";
+import generateTokenAndSetCookie from "../utils/generattoken.js";
 export const signup = async (req, res) => {
     try {
         const { fullname, username, password, confirmpassword, gender } = req.body;
@@ -19,7 +20,8 @@ export const signup = async (req, res) => {
             gender,
             profilepicture: gender === "male" ? boyProfilePic : girlProfilePic,
         });
-
+        if (user){
+            generateTokenAndSetCookie(newUser._id, res);
         await newUser.save();
         res.status(201).json({
             _id: newUser._id,
@@ -28,6 +30,11 @@ export const signup = async (req, res) => {
             password: newUser.password,
             gender: newUser.gender,
         });
+    }
+    else{
+        console.log("Internal error ")
+        res.send(400).json({error:"Internal Error"})
+    }
     } catch (error) {
         console.log("internal error ", error);
         res.status(500).json({ error: "Internal error" });
@@ -36,7 +43,7 @@ export const signup = async (req, res) => {
 
 export const login = (req, res) => {
     console.log('signup user');
-    res.send("muna bhai ")
+    res.send("login ")
 
 };
 
